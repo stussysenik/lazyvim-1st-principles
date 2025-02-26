@@ -18,3 +18,13 @@
 ## How to paste?
 - `p` paste after cursor
 - `gp` paster cursor and move cursor after the pasted text.
+
+date: 02/26/2025 - MAC OS 
+note: still kind of cumbersome, not totally second nature. First commit, still not used to all the possibilities of the programming thinking possible.
+
+Question:
+
+- [] How do you navigate between the buffers quickly?
+
+:lightbulb: idea i don't know i'm just wondering right now, i trust that this will push 100%
+
