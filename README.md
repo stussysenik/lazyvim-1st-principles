@@ -1,1 +1,3 @@
-a library of ninja's learning route from the first principles.
+# Lazyvim 1St Principles
+
+LazyVim knowledge hub
