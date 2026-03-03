@@ -1,0 +1,78 @@
+name: Documentation Proof
+
+on:
+  push:
+    paths:
+      - "README.md"
+      - "readme.md"
+      - "docs/PROJECT_NARRATIVE.md"
+      - ".github/workflows/documentation-proof.yml"
+  pull_request:
+    paths:
+      - "README.md"
+      - "readme.md"
+      - "docs/PROJECT_NARRATIVE.md"
+      - ".github/workflows/documentation-proof.yml"
+  workflow_dispatch:
+
+jobs:
+  docs-proof:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate documentation coverage
+        shell: bash
+        run: |
+          set -eu
+
+          if [[ -f README.md ]]; then
+            README_FILE="README.md"
+          elif [[ -f readme.md ]]; then
+            README_FILE="readme.md"
+          else
+            echo "README.md (or readme.md) is required"
+            exit 1
+          fi
+
+          DOC_FILE="docs/PROJECT_NARRATIVE.md"
+          if [[ ! -f "$DOC_FILE" ]]; then
+            echo "$DOC_FILE is required"
+            exit 1
+          fi
+
+          required_sections=(
+            "User Journey"
+            "Design Methodology"
+            "Progress"
+            "Tech Stack"
+            "Main Key Concepts"
+            "What I'm Bringing to the Table"
+            "Show Don't Tell: Screenshots"
+            "Show Don't Tell: Code Excerpt"
+          )
+
+          for section in "${required_sections[@]}"; do
+            if ! grep -Eiq "^##[[:space:]]+${section}[[:space:]]*$" "$DOC_FILE"; then
+              echo "Missing section in $DOC_FILE: $section"
+              exit 1
+            fi
+          done
+
+          if ! grep -q '```' "$DOC_FILE"; then
+            echo "At least one fenced code excerpt is required in $DOC_FILE"
+            exit 1
+          fi
+
+          if ! grep -Eq '!\[[^]]*\]\([^)]*\)' "$DOC_FILE"; then
+            if ! grep -Eiq "No screenshot asset found locally" "$DOC_FILE"; then
+              echo "Add at least one screenshot markdown image or explicit screenshot-missing note"
+              exit 1
+            fi
+          fi
+
+          if ! grep -Eiq "documentation & proof" "$README_FILE"; then
+            echo "README must include a Documentation & Proof section"
+            exit 1
+          fi
